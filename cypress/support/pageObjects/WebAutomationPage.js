@@ -60,14 +60,14 @@ class WebAutomationPage{
         return cy.get('a[href="/textinput"]')
     }
 
+    getNewButtonName(){
+        return cy.get('#newButtonName')
+    }
+
     getUpdatingButton(){
         return cy.get('#updatingButton')
     }
 
-    getNameUpdateBox(){
-        return cy.get("#newButtonName")
-    }
-    
       
     getScrollbars(){
         return cy.get('a[href="/scrollbars"]')

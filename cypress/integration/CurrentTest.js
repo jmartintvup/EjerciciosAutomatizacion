@@ -21,28 +21,33 @@ describe("web testing automation interview", function(){
         
 
     it ("TestActual", function(){
-    
-            //para acceder a las funciones del page object
-      const page = new webAutomationPage();
 
-      //accedemos a la página web
-      cy.visit(this.data.URL)
-      
-    
-      page.getMouseOver().click()
-      
-      //comprobamos que el clickCount comienza a 0
-      page.getClickCount().should('have.text','0')
-    
-      //Colocamos el ratón encima del botón, lo que genera un cambio del DOM
-      page.getDynamicButton().trigger('mouseenter')
 
-      //seleccionamos el nuevo elemento y hacemos click 2 veces
-      page.getActiveLink().should('be.visible').click().click()
+        //para acceder a las funciones del page object
+        const page = new webAutomationPage();
 
-      //Comprobamos que se ha hecho click dos veces.
-      page.getClickCount().should('have.text','2')
-  
+        //accedemos a la página web
+        cy.visit(this.data.URL)
+
+        page.getTextInput().click()
+
+        var texto
+
+        //comprobamos que el texto inicial del botón no es el que vamos a introducir
+        page.getUpdatingButton().click().then(($t)=>{
+            texto = $t.text()
+            expect(texto).to.not.eq('wawawa')
+        })
+
+        //escribes en la textbox
+        page.getNewButtonName().type('wawawa')
+
+        //Compruebo que el boton ha cambiado de nombre. 
+        page.getUpdatingButton().click().then(($t)=>{
+            texto = $t.text()
+            expect(texto).to.eq('wawawa')
+        })
+        
     })
       
   })

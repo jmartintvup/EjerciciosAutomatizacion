@@ -26,7 +26,7 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
-        page.getDynamicID().should("be.visible").click()
+        page.getDynamicID().click()
 
         page.getButtonNotID()
 
@@ -42,9 +42,9 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
-        page.getClassAtribute().should("be.visible").click()
+        page.getClassAtribute().click()
 
-        page.getBlueButtonClassAttr().should("be.visible").click()
+        page.getBlueButtonClassAttr().click()
 
 
     })
@@ -58,9 +58,11 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
-        page.getHiddenLayers().should('be.visible').click()
+        page.getHiddenLayers().click()
 
-        
+        //cuando intentas hacer click y te da el error que incluya el texto
+        // is being covered by...
+        //el test pasa como OK, porque no es posible hacer click.
 
         page.getGreenButtonHidden().click({timeout:100}).then(() => {
             cy.on('fail', (error, runnable) => {
@@ -107,10 +109,10 @@ describe("web testing automation interview", function(){
         cy.visit(this.data.URL)
 
         //click para acceder a la página de AJAX
-        page.getAJAX().should('be.visible').click()
+        page.getAJAX().click()
 
         //click en el botón para hacer la request
-        page.getAJAXButton().should('be.visible').click()
+        page.getAJAXButton().click()
 
         //como el contenido se añade al dom de forma visible, no vale con
         //poner el timeout en el should, dado que sólo esperaría el
@@ -133,11 +135,11 @@ describe("web testing automation interview", function(){
 
         //prácticamente el mismo test que el anterior. Lo que cambia es
         //que uno es por un AJAX y el otro por JS.
-        page.getClientSideDelay().should('be.visible').click()
+        page.getClientSideDelay().click()
 
-        page.getAJAXButton().should('be.visible').click()
+        page.getAJAXButton().click()
 
-        page.getAJAXText().should('be.visible').click()
+        page.getAJAXText().click()
 
 
     })
@@ -152,13 +154,13 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
-        page.getClick().should('be.visible').click()
+        page.getClick().click()
 
         //El problema con este test era que el botón no registra bien los 
         //clicks falsos. Aquí comprobamos primero que el botón sea visible,
         //que la clase inicial es btn-primary y que después del click es
         //btn-success
-        page.getBadButton().should('be.visible').should('have.class', 'btn-primary')
+        page.getBadButton().should('have.class', 'btn-primary')
         .click().should('have.class', 'btn-success')
 
 
@@ -175,6 +177,26 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
+        page.getTextInput().click()
+
+        var texto
+
+        //comprobamos que el texto inicial del botón no es el que vamos a introducir
+        page.getUpdatingButton().click().then(($t)=>{
+            texto = $t.text()
+            expect(texto).to.not.eq('wawawa')
+        })
+
+        //escribes en la textbox
+        page.getNewButtonName().type('wawawa')
+
+        //Compruebo que el boton ha cambiado de nombre. 
+        page.getUpdatingButton().click().then(($t)=>{
+            texto = $t.text()
+            expect(texto).to.eq('wawawa')
+        })
+        
+
 
     })
 
@@ -187,8 +209,11 @@ describe("web testing automation interview", function(){
         //accedemos a la página web
         cy.visit(this.data.URL)
 
+        
+        page.getScrollbars().click()
+
         //centramos el botón y hacemos click en él.
-        page.getScrollbars().should('be.visible').click()
+        page.getHidingButton().scrollIntoView().click()
 
     })
 
@@ -491,30 +516,34 @@ describe("web testing automation interview", function(){
 
     it ("Shadow DOM", function(){
         //para acceder a las funciones del page object
-      const page = new webAutomationPage();
+        const page = new webAutomationPage();
 
-      //accedemos a la página web
-      cy.visit(this.data.URL)
-      
-    
-      page.getShadowDOM().click()
+        //accedemos a la página web
+        cy.visit(this.data.URL)
+        
+        
+        page.getShadowDOM().click()
 
-      var texto
+        var texto
+        
+        //generamos el texto
+        page.getGenerateButton().click()
 
-      page.getGenerateButton().click()
-  
-      page.getEditField().then(($t)=>{
-        texto = $t.val()
-      })
+        //accedemos al texto generado y lo guardamos en texto
+        page.getEditField().then(($t)=>{
+            texto = $t.val()
+        })
 
+        //hacemos click en el botón que lo copia al portapapeles
+        page.getCopyButton().click();
 
-      page.getCopyButton().click();
-
-      cy.window().then((win) => {
-        win.navigator.clipboard.readText().then((text) => {
-          expect(text).to.eq(texto);
+        //accedemos al portapapeles y comprobamos que el texto copiado
+        //coincide con el texto generado.
+        cy.window().then((win) => {
+            win.navigator.clipboard.readText().then((text) => {
+            expect(text).to.eq(texto);
+            });
         });
-      });
     })
 
 })
